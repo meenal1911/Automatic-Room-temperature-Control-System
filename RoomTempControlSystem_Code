@@ -1,0 +1,82 @@
+const int temp_trans_pin = A0;
+const int Heater_pin = 13;
+const int FAN_pin = 6;
+//Set the range of the desired temperature
+float MinTemp = 20, MaxTemp = 25; //Room Temop [20-25}
+#include<LiquidCrystal.h>
+LiquidCrystal LCD(12, 11, 5, 4, 3, 2);
+void setup(){
+LCD.begin(16, 2);
+/*pinMode(Heater_pin, OUTPUT);
+pinMode(FAN_pin, OUTPUT);*/
+LCD.print("Room Temp(C): ");
+LCD.setCursor(0,0);
+LCD.print(MinTemp);
+LCD.print("-");
+LCD.print(MaxTemp);
+//delay(2000);
+6
+}
+void loop(){
+float Eqv_volt, Sensortemp;
+Eqv_volt = analogRead(temp_trans_pin)*5.0/1023;
+Sensortemp = 100.0*Eqv_volt-50.0;
+LCD.clear();
+LCD.print("Sensor Reading: ");
+LCD.setCursor(2,1);
+LCD.print(Sensortemp);
+LCD.print(" C");
+delay(2000);
+if (Sensortemp > MaxTemp) {
+LCD.clear();
+LCD.print("Temp is HIGHER!");
+LCD.setCursor(0,1); LCD.print("Turn on the Fan!");
+for(int i=0; i<=255; i++){
+analogWrite (FAN_pin, i);
+}
+7
+delay(2000);
+LCD.clear();
+LCD.print("Temp is normal!");
+LCD.setCursor(0,1);
+LCD.print("Turn off the FAN!");
+for(int i=255; i>=0; i--){
+analogWrite (FAN_pin, i);
+}
+delay(2000);
+}
+else if (Sensortemp < MinTemp){
+LCD.clear();
+LCD.print("Temp is LOWER");
+LCD.setCursor(0,1);
+LCD.print("Turn on the Heater!");
+digitalWrite(Heater_pin, HIGH);
+delay(3000);
+8
+LCD.clear();
+LCD.print("Temp is normal!");
+LCD.setCursor(0,1);
+LCD.print("Turn off the Heater!");
+delay(1000);
+digitalWrite(Heater_pin, LOW);
+LCD.clear();
+}
+else if (Sensortemp>MinTemp && Sensortemp<MaxTemp){
+LCD.clear();
+LCD.print("Temp is normal!");
+LCD.setCursor(2,1);
+LCD.print("Turn off Everything!");
+delay(1000);
+LCD.clear();
+}
+else {
+LCD.clear();
+LCD.print("Something went wrong");
+9
+LCD.setCursor(2,1);
+LCD.print("Something is wrong");
+delay(1000);
+LCD.clear();
+}
+delay(1000);
+}
